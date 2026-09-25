@@ -1,0 +1,21 @@
+# 動画・音声・画像素材（容量が大きいので管理しない）
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.mp3
+*.m4a
+*.psd
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 秘密情報
+.env
