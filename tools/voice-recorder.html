@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>声の録音ツール</title>
+<style>
+:root{--bg:#F7F8FA;--card:#fff;--ink:#1F2933;--sub:#5F6B7A;--accent:#2563EB;--rec:#DC2626;--ok:#16A34A;--line:#E3E7EC}
+@media (prefers-color-scheme:dark){:root{--bg:#111418;--card:#1B2027;--ink:#E8EDF2;--sub:#9AA6B2;--line:#2C333C}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.6}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:8px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.sentence{font-size:28px;font-weight:700;min-height:120px;display:flex;align-items:center}
+.meta{color:var(--sub);font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{font:inherit;font-size:16px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+button.rec{background:var(--rec);color:#fff;border-color:var(--rec)}
+button:disabled{opacity:.45;cursor:default}
+.meter{height:12px;background:var(--line);border-radius:6px;overflow:hidden;flex:1;min-width:120px}
+.meter>div{height:100%;width:0;background:var(--ok);transition:width .05s}
+.grid{display:flex;flex-wrap:wrap;gap:4px}
+.grid span{width:26px;height:26px;border-radius:6px;background:var(--line);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.grid span.done{background:var(--ok);color:#fff}
+.grid span.cur{outline:2px solid var(--accent)}
+ul{padding-left:20px;margin:6px 0}
+.warn{color:var(--rec)}
+</style>
+</head>
+<body>
+<main>
+<h1>声の録音ツール（自分の声で読み上げを作るため）</h1>
+<div class="card meta">
+<ul>
+<li>静かな部屋で、マイク（スマホ・PCの内蔵マイクで可）から口まで20〜30cm。エアコン・換気扇は止める</li>
+<li>表示された文を、<b>動画のナレーションのつもり</b>で、いつもの速さで読む。言い間違えたら「撮り直し」</li>
+<li>スペースキーで録音の開始・停止。→キーで次へ</li>
+<li>全部で約15〜20分。途中で保存しても大丈夫（<b>ページを閉じると録音は消えます</b>。こまめに「保存」）</li>
+<li>録音データは<b>このPCの中だけ</b>で処理され、どこにも送信されません</li>
+</ul>
+</div>
+
+<div class="card">
+  <div class="meta" id="pos"></div>
+  <div class="sentence" id="text"></div>
+  <div class="row">
+    <button id="prev">← 前へ</button>
+    <button id="recBtn" class="primary">● 録音（Space）</button>
+    <button id="play" disabled>▶ 再生</button>
+    <button id="next">次へ →</button>
+    <div class="meter"><div id="lvl"></div></div>
+  </div>
+  <p class="meta" id="status">「録音」を押すとマイクの使用許可を求められます。</p>
+</div>
+
+<div class="card">
+  <div class="row" style="justify-content:space-between">
+    <div class="meta" id="total">録音済み 0 文 / 合計 0.0 分</div>
+    <div class="row">
+      <label class="meta"><input type="checkbox" id="ns"> ノイズ抑制（雑音が多いときだけ）</label>
+      <button id="save" class="primary" disabled>保存（ZIP）</button>
+    </div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <p class="meta">保存される中身：<code>wavs/0001.wav</code>…（1文ずつ）、<code>all.wav</code>（全部をつないだもの。音声クローンのサービスにはこれを使う）、<code>list.txt</code>（GPT-SoVITS 用の文字起こし一覧）</p>
+</div>
+</main>
+
+<script>
+const LINES = [
+ "こんにちは。今日は、工場の保全で本当によくあるトラブルを、順番に解説していきます。",
+ "結論から言うと、原因は三つのうちどれかです。",
+ "まずは、この画面を見てください。",
+ "ここで大事なのは、慌てずに、ひとつずつ確認することです。",
+ "絶縁抵抗の測定は、電気設備の健康診断のようなものです。",
+ "使用電圧が三百ボルト以下なら、判定基準は〇・二メガオーム以上です。",
+ "測定には、二百五十ボルトか五百ボルトのメガーを使います。",
+ "漏電ブレーカーが落ちたとき、最初に見るべき場所はどこでしょうか。",
+ "分電盤には、主幹ブレーカーと、分岐回路のブレーカーがあります。",
+ "単相三線式は、百ボルトと二百ボルトの両方を使える方式です。",
+ "三相三線式は、主にモーターなどの動力設備で使われます。",
+ "高圧受電設備では、六千六百ボルトの電気を受けて、変圧器で下げています。",
+ "VCT、CT、VTの違いを、図で整理してみましょう。",
+ "PLCのERRランプが点滅していたら、まずエラーコードを確認します。",
+ "GX Works2でオンラインモニタをすると、ラダーの動きが見えます。",
+ "インバータのアラームには、過電流、過電圧、過熱などがあります。",
+ "センサーが反応しないときは、電源、配線、検出距離の順に確認します。",
+ "電磁弁が動かない原因が、電気なのか空圧なのかを切り分けます。",
+ "ここからは、AIを使って報告書を作る方法を紹介します。",
+ "現場のメモを、そのままAIに渡してみます。",
+ "すると、わずか数十秒で、報告書の下書きができました。",
+ "ただし、AIの答えをそのまま信じるのは危険です。",
+ "特に、数値や規格については、必ず自分で確認してください。",
+ "故障報告書は、現象、影響、原因、処置、再発防止の五つで書きます。",
+ "なぜなぜ分析を、AIと一緒にやってみましょう。",
+ "この方法なら、毎日の日報が十分の一の時間で終わります。",
+ "点検記録アプリを、無料で自作してみました。",
+ "スマホで入力して、そのままPDFで出力できます。",
+ "えっ、こんなところに原因があったんですか？",
+ "実は、これが一番多い失敗なんです。",
+ "なるほど、そういうことだったんですね。",
+ "では、実際にやってみましょう。",
+ "うまくいきました！",
+ "残念ながら、この方法ではうまくいきませんでした。",
+ "なぜでしょうか。理由を考えてみます。",
+ "ポイントは二つあります。一つ目は、記録を残すこと。二つ目は、共有することです。",
+ "一、二、三、四、五、六、七、八、九、十。",
+ "百、千、一万、二〇二六年、三月十五日、午後二時三十分。",
+ "電流は十二・五アンペア、電圧は二百十ボルト、周波数は六十ヘルツです。",
+ "温度は四十五度、圧力は〇・六メガパスカルでした。",
+ "高圧の作業は危険なので、この動画では手順は扱いません。",
+ "作業の前には、必ず電源を切って、検電してください。",
+ "保全の仕事は、地味ですが、工場を止めないための大切な仕事です。",
+ "少人数で設備全般を見ている方に、きっと役立つ内容です。",
+ "今日の内容をまとめると、次の三つです。",
+ "続きは、こちらの動画で詳しく解説しています。",
+ "最後まで見ていただき、ありがとうございました。",
+ "次回は、インバータのトラブルについて解説します。",
+ "それでは、また次の動画でお会いしましょう。",
+ "あいうえお、かきくけこ、さしすせそ、たちつてと、なにぬねの。",
+ "はひふへほ、まみむめも、やゆよ、らりるれろ、わをん。",
+ "がぎぐげご、ざじずぜぞ、だぢづでど、ばびぶべぼ、ぱぴぷぺぽ。",
+ "きゃきゅきょ、しゃしゅしょ、ちゃちゅちょ、にゃにゅにょ、りゃりゅりょ。",
+ "東京特許許可局、赤巻紙青巻紙黄巻紙、生麦生米生卵。",
+ "この設備は、毎朝八時に起動して、夕方五時に停止します。",
+ "予防保全と事後保全、それぞれのメリットとデメリットを比べます。",
+ "MTBFは平均故障間隔、MTTRは平均修復時間のことです。",
+ "クランプメーターを使えば、電線を外さずに電流を測れます。",
+ "接地には、A種、B種、C種、D種の四つがあります。",
+ "このチャンネルでは、現場で本当に使える保全とAIの知識を発信しています。"
+];
+const $ = id => document.getElementById(id);
+let idx = 0, stream = null, recorder = null, chunks = [], ctx = null, analyser = null, recording = false;
+const takes = new Array(LINES.length).fill(null); // Float32Array
+let sampleRate = 48000;
+
+function render(){
+  $('pos').textContent = `${idx+1} / ${LINES.length}`;
+  $('text').textContent = LINES[idx];
+  $('play').disabled = !takes[idx];
+  const g = $('grid'); g.innerHTML = '';
+  LINES.forEach((_, i) => {
+    const s = document.createElement('span');
+    s.textContent = i+1;
+    if (takes[i]) s.className = 'done';
+    if (i === idx) s.classList.add('cur');
+    s.onclick = () => { if(!recording){ idx = i; render(); } };
+    g.appendChild(s);
+  });
+  const n = takes.filter(Boolean).length;
+  const sec = takes.reduce((a,t)=>a+(t? t.length/sampleRate : 0),0);
+  $('total').textContent = `録音済み ${n} 文 / 合計 ${(sec/60).toFixed(1)} 分`;
+  $('save').disabled = n === 0;
+  $('recBtn').textContent = recording ? '■ 停止（Space）' : (takes[idx] ? '● 撮り直し（Space）' : '● 録音（Space）');
+  $('recBtn').className = recording ? 'rec' : 'primary';
+}
+
+async function ensureMic(){
+  if (stream) return;
+  stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, autoGainControl:false, noiseSuppression:$('ns').checked, channelCount:1}});
+  ctx = new AudioContext();
+  sampleRate = ctx.sampleRate;
+  const src = ctx.createMediaStreamSource(stream);
+  analyser = ctx.createAnalyser(); analyser.fftSize = 1024; src.connect(analyser);
+  const buf = new Float32Array(analyser.fftSize);
+  (function loop(){ analyser.getFloatTimeDomainData(buf); let p=0; for(const v of buf) p=Math.max(p,Math.abs(v));
+    $('lvl').style.width = Math.min(100, p*140)+'%'; $('lvl').style.background = p>0.95 ? 'var(--rec)' : 'var(--ok)'; requestAnimationFrame(loop); })();
+}
+
+function trim(x){
+  const th = 0.02, pad = Math.floor(sampleRate*0.15);
+  let s = 0, e = x.length-1;
+  while (s < x.length && Math.abs(x[s]) < th) s++;
+  while (e > s && Math.abs(x[e]) < th) e--;
+  return x.slice(Math.max(0,s-pad), Math.min(x.length,e+pad));
+}
+
+async function toggle(){
+  if (recording){ recorder.stop(); return; }
+  try { await ensureMic(); } catch(e){ $('status').innerHTML = '<span class="warn">マイクを使えませんでした：'+e.message+'</span>'; return; }
+  chunks = []; recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = e => chunks.push(e.data);
+  recorder.onstop = async () => {
+    recording = false;
+    const ab = await new Blob(chunks).arrayBuffer();
+    const audio = await ctx.decodeAudioData(ab);
+    let x = audio.getChannelData(0);
+    if (audio.sampleRate !== sampleRate) sampleRate = audio.sampleRate;
+    x = trim(x);
+    let peak = 0; for (const v of x) peak = Math.max(peak, Math.abs(v));
+    takes[idx] = x;
+    $('status').textContent = peak > 0.98 ? '音が割れています。マイクから少し離れて撮り直してください。'
+      : peak < 0.1 ? '音が小さすぎます。マイクに近づいて撮り直してください。'
+      : `録音しました（${(x.length/sampleRate).toFixed(1)}秒）。→キーで次へ`;
+    render();
+  };
+  recorder.start(); recording = true; $('status').textContent = '録音中… 読み終わったら Space で停止'; render();
+}
+
+function play(){
+  const t = takes[idx]; if(!t || !ctx) return;
+  const b = ctx.createBuffer(1, t.length, sampleRate); b.copyToChannel(t, 0);
+  const s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start();
+}
+
+function wav(x){
+  const n = x.length, buf = new ArrayBuffer(44 + n*2), v = new DataView(buf);
+  const w = (o,s) => { for(let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };
+  w(0,'RIFF'); v.setUint32(4, 36+n*2, true); w(8,'WAVE'); w(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,sampleRate,true); v.setUint32(28,sampleRate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  w(36,'data'); v.setUint32(40,n*2,true);
+  for (let i=0;i<n;i++){ const s=Math.max(-1,Math.min(1,x[i])); v.setInt16(44+i*2, s<0? s*0x8000 : s*0x7FFF, true); }
+  return new Uint8Array(buf);
+}
+
+const CRC = (()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){let c=n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320^(c>>>1) : c>>>1; t[n]=c>>>0;} return t; })();
+function crc32(d){ let c=0xFFFFFFFF; for(let i=0;i<d.length;i++) c = CRC[(c^d[i])&0xFF]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function zip(files){ // 無圧縮ZIP
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  for (const f of files){
+    const name = enc.encode(f.name), crc = crc32(f.data), size = f.data.length;
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0,0x04034b50,true); h.setUint16(4,20,true); h.setUint16(6,0x0800,true);
+    h.setUint32(14,crc,true); h.setUint32(18,size,true); h.setUint32(22,size,true); h.setUint16(26,name.length,true);
+    parts.push(new Uint8Array(h.buffer), name, f.data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0,0x02014b50,true); c.setUint16(4,20,true); c.setUint16(6,20,true); c.setUint16(8,0x0800,true);
+    c.setUint32(16,crc,true); c.setUint32(20,size,true); c.setUint32(24,size,true); c.setUint16(28,name.length,true); c.setUint32(42,off,true);
+    central.push(new Uint8Array(c.buffer), name);
+    off += 30 + name.length + size;
+  }
+  const cs = central.reduce((a,b)=>a+b.length,0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0,0x06054b50,true); e.setUint16(8,files.length,true); e.setUint16(10,files.length,true);
+  e.setUint32(12,cs,true); e.setUint32(16,off,true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)], {type:'application/zip'});
+}
+
+function save(){
+  const enc = new TextEncoder(), files = [], list = [], all = [];
+  const gap = new Float32Array(Math.floor(sampleRate*0.6));
+  takes.forEach((t,i) => { if(!t) return;
+    const name = `wavs/${String(i+1).padStart(4,'0')}.wav`;
+    files.push({name, data: wav(t)}); list.push(`${name}|me|JA|${LINES[i]}`); all.push(t, gap);
+  });
+  const len = all.reduce((a,b)=>a+b.length,0), cat = new Float32Array(len); let o=0; for(const a of all){ cat.set(a,o); o+=a.length; }
+  files.push({name:'all.wav', data: wav(cat)});
+  files.push({name:'list.txt', data: enc.encode(list.join('\n')+'\n')});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(zip(files));
+  a.download = `voice_${new Date().toISOString().slice(0,10)}.zip`; a.click();
+  $('status').textContent = '保存しました。このZIPはGitHubに上げず、外部にも公開しないでください。';
+}
+
+$('recBtn').onclick = toggle; $('play').onclick = play; $('save').onclick = save;
+$('prev').onclick = () => { if(!recording && idx>0){ idx--; render(); } };
+$('next').onclick = () => { if(!recording && idx<LINES.length-1){ idx++; render(); } };
+$('ns').onchange = () => { if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } };
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space'){ e.preventDefault(); toggle(); }
+  if (e.code === 'ArrowRight') $('next').click();
+  if (e.code === 'ArrowLeft') $('prev').click();
+});
+window.addEventListener('beforeunload', e => { if (takes.some(Boolean)) { e.preventDefault(); e.returnValue=''; } });
+render();
+</script>
+</body>
+</html>

@@ -3,7 +3,8 @@
 ## セットアップ（WSL / Ubuntu）
 1. このフォルダを好きな場所に展開し、git init する
 2. `bash scripts/setup.sh`（ffmpeg・日本語フォント・auto-editor・faster-whisper・Pillow）
-   - 自動作成には VOICEVOX（ローカル）と Playwright も使う（docs/08_auto-production.md。/render は作成予定）
+   - 自動作成には声のクローン（ElevenLabs か GPT-SoVITS）と Playwright も使う（docs/08_auto-production.md。/render は作成予定）
+   - 声の録音は tools/voice-recorder.html を Chrome で開く
 3. `source .venv/bin/activate`
 4. フォルダ内で `claude` を起動。CLAUDE.md が自動で読み込まれる
 
