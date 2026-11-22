@@ -6,7 +6,7 @@ description: 新しい動画の制作を始める。動画案の番号を受け�
 
 1. docs/video-ideas.md から指定番号の動画案を確認する（番号がなければ★の未着手から提案して確認を取る）
 2. `scripts/new_video.sh <番号> <英小文字の短い名前>` を実行する
-3. docs/02_niche.md と docs/03_video-format.md を読む
+3. docs/02_niche.md と docs/03_video-format.md を読む。analytics/log.csv の pillar 列で直近の柱の比率を確認し、比率から外れていれば指摘する
 4. Web検索で以下を調べ、01_research.md を埋める
    - 視聴者の悩み、想定検索語3つ、競合上位3本とその弱点
    - 「自分だけが出せる材料」は空欄にしてユーザーに質問する（推測で埋めない）

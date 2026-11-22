@@ -8,7 +8,7 @@
 | 4 撮影 | 人 | OBS Studio、スマホ | 30分 |
 | 5 編集 | AI → 人が仕上げ | auto-editor、faster-whisper、DaVinci Resolve | 20分 |
 | 6 サムネ | AI → 人が選ぶ | scripts/thumbnail.py | 5分 |
-| 7 投稿 | 人 | YouTube Studio（API自動化は第3段階） | 5分 |
+| 7 投稿 | 人 | YouTube Studio・TikTok アプリ（YouTube の API 自動化は第3段階） | 20分 |
 | 8 分析 | AI | Studioから出したCSV → /weekly-review | 10分 |
 | 9 Shorts化 | AI | scripts/shorts.sh | 5分 |
 
@@ -17,7 +17,8 @@
 2. 第2段階（4週〜）：編集・サムネ・Shortsをスクリプト化
 3. 第3段階（12週〜）：YouTube Data API／Analytics APIで投稿と集計を自動化
 
-## 再利用（Shorts・TikTok・Reels）
+## 再利用（Shorts・TikTok。詳細は docs/07_sns.md）
 - 1本の長尺から3本：フックの場面／失敗シーン／まとめ3ポイント
 - 9:16、字幕大きめ、冒頭1秒で結論、最後に長尺へ誘導
-- TikTok・Reels用は透かしのない元ファイルから書き出す
+- TikTok・Reels用は透かしのない元ファイルから書き出す。同じファイルを YouTube Shorts と TikTok に投稿する
+- TikTok からダウンロードしたロゴ入り動画を YouTube に上げない

@@ -1,4 +1,4 @@
-# yt-ops：保全×AI YouTube運用システム（Claude Code用）
+# yt-ops：製造業DX×AI YouTube運用システム（Claude Code用）
 
 ## セットアップ（WSL / Ubuntu）
 1. このフォルダを好きな場所に展開し、git init する
@@ -14,15 +14,15 @@
 /edit                → 無音カット＋字幕
   DaVinci Resolveで仕上げ
 /thumbnail           → 3案
-/shorts              → 縦型3本
+/shorts              → 縦型3本（YouTube Shorts・TikTok 共通）
 /publish-prep        → メタデータ＋チェック  ← 関門2
-  Studioで公開（あなた）
+  YouTube Studio と TikTok で公開（あなた）
 /weekly-review       → 毎週1回
 ```
 
 ## 構成
 - CLAUDE.md：前提・ルール・禁止事項
-- docs/：設計（全体・ニッチ・動画の型・指標・制作フロー・収益化）と動画案100本
+- docs/：設計（全体・ニッチ・動画の型・指標・制作フロー・収益化・SNS）と動画案115本
 - plan/90days.md：90日計画（チェックボックス）
 - templates/：調査・台本・メタデータ・チェックリスト・台本例
 - scripts/：自動化スクリプト

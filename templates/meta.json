@@ -5,7 +5,10 @@
   "description_first_lines": "",
   "description": "",
   "chapters": [
-    {"time": "0:00", "label": ""}
+    {
+      "time": "0:00",
+      "label": ""
+    }
   ],
   "tags": [],
   "playlist": "",
@@ -15,6 +18,14 @@
   "ai_disclosure_needed": false,
   "ai_disclosure_reason": "",
   "shorts": [
-    {"file": "09_shorts/short1.mp4", "title": "", "related_video": true}
-  ]
+    {
+      "file": "09_shorts/short1.mp4",
+      "youtube_title": "",
+      "related_video": true,
+      "tiktok_caption": "",
+      "tiktok_hashtags": [],
+      "tiktok_pinned_comment": ""
+    }
+  ],
+  "midroll_times": []
 }
