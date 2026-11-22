@@ -2,19 +2,23 @@
 
 | 工程 | 担当 | ツール | 人の時間 |
 |---|---|---|---|
-| 1 調査 | AI → 人が選ぶ | Claude（Web検索） | 10分 |
-| 2 台本 | AI → 人が承認 | /script | 20分 |
-| 3 ナレーション | 人（冒頭と要所） | 自分の声。補助にVOICEVOX（規約・クレジット要確認） | 15分 |
-| 4 撮影 | 人 | OBS Studio、スマホ | 30分 |
-| 5 編集 | AI → 人が仕上げ | auto-editor、faster-whisper、DaVinci Resolve | 20分 |
-| 6 サムネ | AI → 人が選ぶ | scripts/thumbnail.py | 5分 |
-| 7 投稿 | 人 | YouTube Studio・TikTok アプリ（YouTube の API 自動化は第3段階） | 20分 |
-| 8 分析 | AI | Studioから出したCSV → /weekly-review | 10分 |
-| 9 Shorts化 | AI | scripts/shorts.sh | 5分 |
+| 1 調査 | AI → 人が選ぶ | Claude（Web検索）/new-video | 5分 |
+| 2 現場メモ | **人** | テキストか音声メモ（経験・失敗・数値） | 10分 |
+| 3 台本＋シーン表 | AI → 人が承認 | /script（02_script.md と 03_scenes.json） | 15分 |
+| 4 音声 | AI | VOICEVOX（ローカル） | 0分 |
+| 5 映像 | AI | 図解・スライド・キャラクター（HTML→画像）、画面の自動録画（Playwright） | 0分 |
+| 6 合成 | AI | ffmpeg（字幕・BGM・アニメーション） | 0分 |
+| 7 完成確認 | **人** | 完成動画を通しで見る（1.5倍速） | 10分 |
+| 8 サムネ | AI → 人が選ぶ | scripts/thumbnail.py | 5分 |
+| 9 縦型 | AI | 同じシーン表から9:16で書き出し | 0分 |
+| 10 投稿 | **人** | YouTube Studio・TikTok アプリ | 20分 |
+| 11 分析 | AI | Studioから出したCSV → /weekly-review | 10分 |
+
+人の作業：1本あたり約75分（推測）
 
 ## 導入の段階
-1. 第1段階（1〜3週）：手作業＋Claudeで作る。工程ごとの時間を記録
-2. 第2段階（4週〜）：編集・サムネ・Shortsをスクリプト化
+1. 第1段階（1〜3週）：自動作成の仕組み（/render）を作り、試作1本で通しの確認
+2. 第2段階（4週〜）：週1本の運用。読み方の辞書・図解の型を増やしていく
 3. 第3段階（12週〜）：YouTube Data API／Analytics APIで投稿と集計を自動化
 
 ## 再利用（Shorts・TikTok。詳細は docs/07_sns.md）

@@ -2,9 +2,11 @@
 videos/NNN_短い名前/
   01_research.md    調査メモ（templates/research.md から）
   02_script.md      台本（status: draft → approved）
-  03_audio/         自分の声・補助音声
-  04_raw/           収録素材（OBS・スマホ）
-  05_edit/          カット済み動画・字幕（.srt）
+  00_memo.md        現場メモ（人が書く。必須）
+  03_scenes.json    シーン表（ナレーション・映像の種類・図解の指定）
+  03_audio/         合成音声（シーンごと）
+  04_assets/        図解・イラスト・画面録画
+  05_edit/          完成動画・字幕（.srt）
   06_thumb/         サムネイル3案
   07_meta.json      タイトル・説明文・タグ・チャプター
   08_analytics/     公開後のデータ
