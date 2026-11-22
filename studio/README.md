@@ -20,5 +20,5 @@ URL: https://claude.ai/artifact/3qVLrULds3QcbP9D7129kn
 | 項目 | 内容 |
 |---|---|
 | voice | 選ばれた声のキー |
-| voiceOptions | [{key, label, url, openjtalk:{speed, fm, alpha, jf}}] |
+| voiceOptions | [{key, label, url, openjtalk:{model, speed, fm, alpha, jf}, credit}]。model は m001（男性）か mei_normal／mei_happy／mei_bashful など（女性・Mei） |
 | schedule | 定期実行の予定（表示用） |

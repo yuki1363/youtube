@@ -3,7 +3,8 @@
   "out_dir": "videos/001_coin-check/05_edit",
   "voice": {
     "engine": "openjtalk",
-    "speed": 1.1
+    "model": "mei_happy",
+    "speed": 1.05
   },
   "bgm": {
     "type": "synth",

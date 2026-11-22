@@ -11,7 +11,7 @@ description: ネタ選びから完成動画・部門報告までを自動で作�
 - `scripts/setup_cloud.sh`（道具が入っていなければ入れる）
 - 読む：CLAUDE.md、docs/01_strategy.md、docs/02_departments.md、docs/03_format.md、docs/video-ideas.md、plan/ideas-inbox.md、analytics/log.csv、studio/README.md
 - **スマホのレビューページ（studio/README.md のURL）を確認する**：Artifact の read で一度読み、ArtifactData で
-  - `settings/main` の `voice` と `voiceOptions` → 選ばれた声の `openjtalk` 設定を plan.json の voice に使う
+  - `settings/main` の `voice` と `voiceOptions` → 選ばれた声の `openjtalk` 設定（model・speed・fm など）を plan.json の voice にそのまま入れ、`credit` を説明欄のクレジットに書く
   - `videos` の `status: "redo"` → **新作より先に**その動画を `note` の指示どおりに直す（直したら status を review に戻し、note は残す）
   - `status: "posted"` → analytics/log.csv に行がなければ追加（公開日＝postedAt、数値は空欄）
 - 次の番号 = videos/ の最大番号＋1

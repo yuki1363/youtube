@@ -33,9 +33,16 @@ def run(cmd):
 
 
 # ---------- ナレーション ----------
-def tts_openjtalk(text, path, speed, fm=0.0, alpha=None, jf=None):
+VOICES = {
+    "m001": "/usr/share/hts-voice/nitech-jp-atr503-m001/nitech_jp_atr503_m001.htsvoice",   # 男性
+    # 女性「Mei」（MMDAgent, CC BY 3.0）。scripts/setup_cloud.sh が入れる
+    **{f"mei_{m}": f"/opt/voices/mei/mei_{m}.htsvoice" for m in ("normal", "happy", "bashful", "sad", "angry")},
+}
+
+
+def tts_openjtalk(text, path, speed, fm=0.0, alpha=None, jf=None, model="m001"):
     """fm：声の高さ（半音）、alpha：声質（小さいほど軽い声）、jf：抑揚の強さ。可愛い声は plan.json の voice で指定"""
-    voice = "/usr/share/hts-voice/nitech-jp-atr503-m001/nitech_jp_atr503_m001.htsvoice"
+    voice = VOICES[model]
     dic = "/var/lib/mecab/dic/open-jtalk/naist-jdic"
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
         f.write(text)
@@ -182,7 +189,7 @@ def main(plan_path):
     work = os.path.join(out_dir, "work"); os.makedirs(work, exist_ok=True)
     vc = plan.get("voice", {})
     speed = vc.get("speed", 1.0)
-    vopt = {"fm": vc.get("fm", 0.0), "alpha": vc.get("alpha"), "jf": vc.get("jf")}
+    vopt = {"fm": vc.get("fm", 0.0), "alpha": vc.get("alpha"), "jf": vc.get("jf"), "model": vc.get("model", "m001")}
 
     segs, t, readings, problems, clips, wavs = [], 0.0, [], [], [], []
     for i, line in enumerate(plan["lines"]):
