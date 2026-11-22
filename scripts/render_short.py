@@ -22,8 +22,8 @@ from common import W, H, BG, INK, font  # noqa: E402
 FPS = 30
 GAP = 0.25              # 文と文の間（秒）
 SR = 48000
-FIG_SCALE = 0.74        # 図を縮めて、下に字幕の場所を空ける
-SUB_TOP = 1470          # 字幕の上端。下の約330pxはShortsのボタン・タイトルに隠れるため空ける（推測）
+FIG_SCALE = 1.0         # HTML版の図は字幕の場所（下部）を空けて描くので縮めない。Pillow版は0.74
+SUB_TOP = 1520          # 字幕の上端。下の約330pxはShortsのボタン・タイトルに隠れるため空ける（推測）
 SUB_CHARS = 14          # 字幕1行の最大文字数
 
 
@@ -38,9 +38,20 @@ def tts_openjtalk(text, path, speed):
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
         f.write(text)
     raw = path + ".raw.wav"
-    run(["open_jtalk", "-x", dic, "-m", voice, "-r", str(speed), "-ow", raw, f.name])
+    trace = path + ".trace.txt"
+    run(["open_jtalk", "-x", dic, "-m", voice, "-r", str(speed), "-ow", raw, "-ot", trace, f.name])
     run(["ffmpeg", "-y", "-i", raw, "-ar", str(SR), "-ac", "1", path])
     os.remove(raw); os.remove(f.name)
+    return reading(trace)
+
+
+def reading(trace):
+    """open_jtalk の出力ラベルから音素列を取り出す（ナレーション部門の読み確認用）。| は息継ぎ"""
+    import re
+    lab = open(trace, encoding="utf-8", errors="ignore").read().split("[Output label]")[-1]
+    lab = lab.split("\n[")[0]                     # 次の見出しまで（同じラベルが2回出るため）
+    ph = re.findall(r"\^([a-zA-Z]+)-", lab)
+    return " ".join(ph).replace("sil", "").replace("pau", "|").replace("xx", "").strip()
 
 
 def wav_seconds(path):
@@ -103,7 +114,7 @@ def frame(fig_path, text, out_path):
     img = Image.new("RGB", (W, H), BG)
     fig = Image.open(fig_path).convert("RGB")
     fw, fh = int(W * FIG_SCALE), int(H * FIG_SCALE)
-    img.paste(fig.resize((fw, fh), Image.LANCZOS), ((W - fw) // 2, 20))
+    img.paste(fig.resize((fw, fh), Image.LANCZOS), ((W - fw) // 2, 0 if FIG_SCALE == 1.0 else 20))
     d = ImageDraw.Draw(img)
     f = font(58)
     rows = wrap(text.rstrip("。"))
@@ -128,10 +139,11 @@ def main(plan_path):
     work = os.path.join(out_dir, "work"); os.makedirs(work, exist_ok=True)
     speed = plan.get("voice", {}).get("speed", 1.0)
 
-    segs, t = [], 0.0
+    segs, t, readings = [], 0.0, []
     for i, line in enumerate(plan["lines"]):
         wav = os.path.join(work, f"v{i:02}.wav")
-        tts_openjtalk(line.get("say", line["text"]), wav, speed)  # say：読み間違い対策の読み方
+        ph = tts_openjtalk(line.get("say", line["text"]), wav, speed)  # say：読み間違い対策の読み方
+        readings.append(f"{i+1}. {line['text']}\n   読み: {ph}\n")
         dur = wav_seconds(wav) + GAP
         pieces = chunks(line["text"])
         voiced = wav_seconds(wav)
@@ -148,6 +160,10 @@ def main(plan_path):
             st += d
         t += dur
     total = t + 0.5
+
+    # ナレーション部門の確認表：全文の読み（音素）。読み違いはここで探し、plan.json の say で直す
+    with open(os.path.join(out_dir, "readings.txt"), "w", encoding="utf-8") as f:
+        f.write("".join(readings))
 
     # 字幕ファイル（YouTubeにアップロードする用。画面には焼き込み済み）
     with open(os.path.join(out_dir, "final.srt"), "w", encoding="utf-8") as f:

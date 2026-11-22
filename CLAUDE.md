@@ -11,7 +11,7 @@
 - 投稿：Shorts 週3本から始める。長尺はShorts10本の反応を見て判断
 - 収益：まず広告（YouTubeパートナープログラムの条件は公式で要確認）
 - 方針：半自動。「判断」は人、声は合成音声（2026-11-22 決定）、図解・台本の下書き・編集はAIが担う
-- 組み立て：`python3 scripts/render_short.py videos/NNN_xxx/05_edit/plan.json`（声・字幕・図解・BGMを1本に）
+- 組み立て：図解は `node scripts/figures/render_html.js <出力先> <図.html>...`、動画は `python3 scripts/render_short.py videos/NNN_xxx/05_edit/plan.json`
 
 ## 部門
 docs/02_departments.md の12部門で作る。回答・成果物は部門ごとに検討し、最後に統括（リーダー）がまとめる。
@@ -19,9 +19,11 @@ docs/02_departments.md の12部門で作る。回答・成果物は部門ごと�
 ## 作業ルール
 - 実行前に関連する docs/ と templates/ を読む
 - 1動画 = videos/NNN_短い名前/ の1フォルダ。構成は templates/video-folder.md
-- 人の関門は2つ。ここで必ず止まってユーザーの承認を待つ
+- 人の関門は3つ。ここで必ず止まってユーザーの承認を待つ
   1. 台本の承認（02_script.md の `status: approved`）
-  2. 公開前確認（checklist.md が全てチェック済み）
+  2. 音声確認（合成音声で不自然な箇所がないか、人が聞いて確認。AIは音を聞けない）
+  3. 公開前確認（checklist.md が全てチェック済み）
+- 各部門は docs/02_departments.md の合格基準で判定し、「見つけた問題」を報告する
 - 台本の事実は、内容精度部門が出典と照合してから台本承認に出す
 - 推測と実測を必ず分ける。実測のない数値は [要実測]、出典のない事実は [要確認] と書く
 - 不確かな技術情報は「不確か」と明記する

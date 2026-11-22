@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../style.css"></head><body>
+<div class="head"><div class="step">検査 2</div><div class="title">磁界で<em>材質</em>を見る</div></div>
+<svg width="1080" height="1920"><defs>
+<radialGradient id="coin" cx="38%" cy="35%" r="75%"><stop offset="0" stop-color="#FFF3B0"/><stop offset=".45" stop-color="var(--gold1)"/><stop offset="1" stop-color="var(--gold2)"/></radialGradient>
+<linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E5E7EB"/><stop offset="1" stop-color="#9CA3AF"/></linearGradient>
+<linearGradient id="copper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDBA74"/><stop offset=".5" stop-color="var(--copper1)"/><stop offset="1" stop-color="var(--copper2)"/></linearGradient>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#7c4a03" flood-opacity=".22"/></filter>
+<symbol id="c" viewBox="-100 -100 200 200"><circle r="96" fill="url(#coin)" stroke="#92400E" stroke-width="6"/><circle r="74" fill="none" stroke="#B45309" stroke-width="5" opacity=".6"/><path d="M-40,-62 A74,74 0 0 1 40,-62" stroke="#fff" stroke-width="10" fill="none" opacity=".55" stroke-linecap="round"/></symbol>
+</defs>
+<!-- 磁界の線 -->
+<g fill="none" stroke="var(--blue)" stroke-width="6" stroke-dasharray="18 14" opacity=".75">
+ <ellipse cx="540" cy="820" rx="210" ry="200"/><ellipse cx="540" cy="820" rx="300" ry="270"/><ellipse cx="540" cy="820" rx="390" ry="330"/>
+</g>
+<!-- 通路 -->
+<rect x="60" y="790" width="960" height="60" rx="12" fill="url(#metal)" stroke="#6B7280" stroke-width="4"/>
+<!-- コイル（銅線を巻いた形） -->
+<g filter="url(#sh)">
+ <rect x="400" y="740" width="280" height="160" rx="20" fill="#78350F" opacity=".25"/>
+</g>
+<g stroke-linecap="round" fill="none"><path d="M420,725 L420,915" stroke="#B45309" stroke-width="30"/><path d="M414,735 L414,905" stroke="#FCD34D" stroke-width="8" opacity=".8"/><path d="M460,725 L460,915" stroke="#B45309" stroke-width="30"/><path d="M454,735 L454,905" stroke="#FCD34D" stroke-width="8" opacity=".8"/><path d="M500,725 L500,915" stroke="#B45309" stroke-width="30"/><path d="M494,735 L494,905" stroke="#FCD34D" stroke-width="8" opacity=".8"/><path d="M540,725 L540,915" stroke="#B45309" stroke-width="30"/><path d="M534,735 L534,905" stroke="#FCD34D" stroke-width="8" opacity=".8"/><path d="M580,725 L580,915" stroke="#B45309" stroke-width="30"/><path d="M574,735 L574,905" stroke="#FCD34D" stroke-width="8" opacity=".8"/><path d="M620,725 L620,915" stroke="#B45309" stroke-width="30"/><path d="M614,735 L614,905" stroke="#FCD34D" stroke-width="8" opacity=".8"/><path d="M660,725 L660,915" stroke="#B45309" stroke-width="30"/><path d="M654,735 L654,905" stroke="#FCD34D" stroke-width="8" opacity=".8"/></g>
+<g filter="url(#sh)"><rect x="740" y="590" width="210" height="70" rx="16" fill="#fff"/></g>
+<text x="845" y="640" text-anchor="middle" class="tag" fill="var(--copper2)">コイル</text>
+<path d="M760,660 L680,725" stroke="var(--copper2)" stroke-width="6"/>
+<text x="900" y="520" text-anchor="middle" class="tag" fill="var(--blue)">磁界</text>
+<!-- 近づく硬貨 -->
+<g stroke="#D97706" stroke-width="10" stroke-linecap="round" opacity=".5"><line x1="70" y1="700" x2="160" y2="700"/><line x1="90" y1="740" x2="170" y2="740"/></g>
+<use href="#c" x="180" y="640" width="170" height="170"/>
+<!-- 変化のイメージ -->
+<g filter="url(#sh)"><rect x="80" y="1100" width="430" height="310" rx="32" fill="#fff"/><rect x="570" y="1100" width="430" height="310" rx="32" fill="#fff"/></g>
+<rect x="130" y="1240" width="330" height="70" fill="#DCFCE7"/><rect x="620" y="1240" width="330" height="70" fill="#DCFCE7"/>
+<path d="M130,1350 C200,1350 230,1270 295,1270 C360,1270 390,1350 460,1350" fill="none" stroke="#16A34A" stroke-width="10" stroke-linecap="round"/>
+<path d="M620,1350 C690,1350 720,1180 785,1180 C850,1180 880,1350 950,1350" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round"/>
+<text x="295" y="1185" text-anchor="middle" class="tag" fill="#16A34A">本物</text>
+<text x="785" y="1170" text-anchor="middle" font-size="40" font-weight="900" fill="var(--accent)">別の金属</text>
+<text x="540" y="1460" text-anchor="middle" font-size="36" fill="var(--muted)">変化の形はイメージ（電子式の選別装置の例）</text>
+</svg>
+</body></html>
