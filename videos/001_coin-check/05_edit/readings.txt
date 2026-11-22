@@ -1,16 +1,24 @@
 1. 自販機に入れた硬貨、実は転がっている一瞬で、本物かどうか検査されています。
    読み: j i h a N k i n i i r e t a k o o k a | j i ts u w a k o r o g a cl t e i r u i cl sh u N d e | h o N m o n o k a d o o k a k e N s a s a r e t e i m a s U
+   1音の長さ: 平均71ms／最大185ms
 2. 硬貨は坂道を転がりながら、いくつかの検査を受けます。
    読み: k o o k a w a s a k a m i ch i o k o r o g a r i n a g a r a | i k U ts u k a n o k e N s a o u k e m a s U
+   1音の長さ: 平均71ms／最大185ms
 3. まず大きさと厚み。
    読み: m a z u o o k i s a t o a ts u m i
+   1音の長さ: 平均73ms／最大110ms
 4. 次に、電子式の選別装置では、コイルで磁界を作って、硬貨を通したときの変化を見ます。
    読み: ts u g i n i | d e N sh i sh I k i n o s e N b e ts U s o o ch i d e w a | k o i r u d e j i k a i o ts U k u cl t e | k o o k a o t o o sh i t a t o k i n o h e N k a o m i m a s U
+   1音の長さ: 平均72ms／最大185ms
 5. 金属の種類によって変化の仕方が違うので、材質が分かるんです。
    読み: k i N z o k u n o sh u r u i n i y o cl t e h e N k a n o sh I k a t a g a ch i g a u n o d e | z a i sh I ts u g a w a k a r u N d e s U
+   1音の長さ: 平均69ms／最大185ms
 6. 基準から外れた硬貨は、返却口へ振り分けられます。
    読み: k i j u N k a r a h a z u r e t a k o o k a w a | h e N ky a k u g u ch i e f u r i w a k e r a r e m a s U
+   1音の長さ: 平均68ms／最大185ms
 7. 外国のコインや、大きさの近い別の硬貨が戻ってくるのはこのためです。
-   読み: g a i k o k u n o k o i N y a | o o k i s a n o ch I k a i b e ts u n o k o o k a g a m o d o cl t e k u r u n o w a k o n o t a m e d e s U
+   読み: g a i k o k u n o k o i N y a | o o k i s a n o ch I k a i b e ts u n o k o o k a g a m o d o cl t e k u r u n o w a | k o n o t a m e d e s U
+   1音の長さ: 平均70ms／最大185ms
 8. ほかの身近な仕組みも、図解で出しています。
    読み: h o k a n o m i j i k a n a sh I k u m i m o | z u k a i d e d a sh I t e i m a s U
+   1音の長さ: 平均68ms／最大185ms

@@ -25,6 +25,7 @@ SR = 48000
 FIG_SCALE = 1.0         # HTML版の図は字幕の場所（下部）を空けて描くので縮めない。Pillow版は0.74
 SUB_TOP = 1520          # 字幕の上端。下の約330pxはShortsのボタン・タイトルに隠れるため空ける（推測）
 SUB_CHARS = 14          # 字幕1行の最大文字数
+SLOW_MS = 300           # 1音がこれより長いと「急に遅くなる」不具合とみなす（通常の最大は約185ms：実測）
 
 
 def run(cmd):
@@ -51,7 +52,15 @@ def reading(trace):
     lab = open(trace, encoding="utf-8", errors="ignore").read().split("[Output label]")[-1]
     lab = lab.split("\n[")[0]                     # 次の見出しまで（同じラベルが2回出るため）
     ph = re.findall(r"\^([a-zA-Z]+)-", lab)
-    return " ".join(ph).replace("sil", "").replace("pau", "|").replace("xx", "").strip()
+    text = " ".join(ph).replace("sil", "").replace("pau", "|").replace("xx", "").strip()
+    # 1音の長さ（ミリ秒）。Open JTalk は長い文の終わりで急に遅くなる不具合があるため検出する
+    durs = []
+    for row in lab.strip().splitlines():
+        r = row.split()
+        m = re.search(r"-([a-zA-Z]+)\+", r[2]) if len(r) >= 3 else None
+        if m and m.group(1) not in ("sil", "pau"):
+            durs.append((int(r[1]) - int(r[0])) / 1e4)
+    return text, max(durs), sum(durs) / len(durs)
 
 
 def wav_seconds(path):
@@ -81,20 +90,34 @@ def synth_bgm(seconds, path):
 
 
 # ---------- 画面 ----------
+def _kind(ch):
+    if "\u3041" <= ch <= "\u309f":
+        return "hira"
+    if "\u30a0" <= ch <= "\u30ff":
+        return "kata"
+    if "\u4e00" <= ch <= "\u9fff":
+        return "kanji"
+    return "other"
+
+
 def wrap(text, n=SUB_CHARS):
-    """句読点の後ろで優先して改行し、1行n文字以内にする。"""
-    lines, cur = [], ""
-    for ch in text:
-        cur += ch
-        if len(cur) >= n or (ch in "、。" and len(cur) >= n * 0.6):
-            lines.append(cur); cur = ""
-    if cur:
-        lines.append(cur)
-    # 句読点だけが次の行の先頭に来ないようにする
-    for i in range(1, len(lines)):
-        while lines[i] and lines[i][0] in "、。":
-            lines[i - 1] += lines[i][0]; lines[i] = lines[i][1:]
-    return [l for l in lines if l]
+    """1行n文字以内で、言葉の切れ目で改行する（最大2行を想定）。
+    切れ目の優先度：「、」の後 ＞ ひらがな→漢字・カタカナに変わる所（助詞の後のことが多い）。同点なら中央に近い所"""
+    if len(text) <= n:
+        return [text]
+    best, best_score = None, -1
+    lo, hi = max(1, len(text) - n), min(n, len(text) - 1)
+    for k in range(lo, hi + 1):
+        a, b = text[k - 1], text[k]
+        if b in "、。ーっゃゅょぁぃぅぇぉ":
+            continue
+        score = 3 if a == "、" else 2 if (_kind(a) == "hira" and _kind(b) in ("kanji", "kata")) else 0
+        score -= abs(k - len(text) / 2) / 100
+        if score > best_score:
+            best, best_score = k, score
+    if best is None:
+        best = n
+    return [text[:best]] + wrap(text[best:], n)
 
 
 def chunks(text, max_chars=SUB_CHARS * 2):
@@ -110,22 +133,40 @@ def chunks(text, max_chars=SUB_CHARS * 2):
     return parts
 
 
-def frame(fig_path, text, out_path):
-    img = Image.new("RGB", (W, H), BG)
-    fig = Image.open(fig_path).convert("RGB")
-    fw, fh = int(W * FIG_SCALE), int(H * FIG_SCALE)
-    img.paste(fig.resize((fw, fh), Image.LANCZOS), ((W - fw) // 2, 0 if FIG_SCALE == 1.0 else 20))
+def subtitle_png(text, out_path):
+    """字幕だけの透明PNG（図の上に重ねる）。戻り値は行数"""
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     f = font(58)
     rows = wrap(text.rstrip("。"))
     lh = 80
     top = SUB_TOP
     box_h = lh * len(rows) + 40
-    d.rounded_rectangle([60, top - 20, W - 60, top - 20 + box_h], radius=24, fill=(255, 255, 255), outline=INK, width=4)
+    d.rounded_rectangle([60, top - 20, W - 60, top - 20 + box_h], radius=24, fill=(255, 255, 255, 255), outline=INK, width=4)
     for i, r in enumerate(rows):
         d.text((W // 2, top + lh * i + lh // 2 - 10), r, font=f, fill=INK, anchor="mm")
     img.save(out_path)
     return len(rows)
+
+
+ZOOM = 0.06             # 1文の間に6%だけ寄る（または引く）。画面が止まって見えないようにする
+
+
+def line_clip(fig_path, subs, dur, focus, zoom_in, out_path):
+    """1文ぶんの映像：図をfocusに向けてゆっくりズームし、字幕を時刻どおりに重ねる"""
+    frames = max(1, int(round(dur * FPS)))
+    fx, fy = focus
+    z = f"1+{ZOOM}*on/{frames}" if zoom_in else f"{1 + ZOOM}-{ZOOM}*on/{frames}"
+    # 2倍に拡大してからズームすると、動きがガタつかない
+    zp = (f"scale={W*2}:{H*2},zoompan=z='{z}':d={frames}:s={W}x{H}:fps={FPS}"
+          f":x='max(0,min(iw-iw/zoom,{fx*2}-iw/zoom/2))':y='max(0,min(ih-ih/zoom,{fy*2}-ih/zoom/2))'")
+    inputs = ["-loop", "1", "-t", f"{dur:.3f}", "-i", fig_path]
+    chain = f"[0]{zp},format=yuv420p[v0]"
+    for j, (png, a, b) in enumerate(subs, 1):
+        inputs += ["-i", png]
+        chain += f";[v{j-1}][{j}]overlay=0:0:enable='between(t,{a:.3f},{b:.3f})'[v{j}]"
+    run(["ffmpeg", "-y", *inputs, "-filter_complex", chain, "-map", f"[v{len(subs)}]",
+         "-frames:v", str(frames), "-r", str(FPS), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", out_path])
 
 
 def srt_time(s):
@@ -139,25 +180,37 @@ def main(plan_path):
     work = os.path.join(out_dir, "work"); os.makedirs(work, exist_ok=True)
     speed = plan.get("voice", {}).get("speed", 1.0)
 
-    segs, t, readings = [], 0.0, []
+    segs, t, readings, problems, clips, wavs = [], 0.0, [], [], [], []
     for i, line in enumerate(plan["lines"]):
         wav = os.path.join(work, f"v{i:02}.wav")
-        ph = tts_openjtalk(line.get("say", line["text"]), wav, speed)  # say：読み間違い対策の読み方
-        readings.append(f"{i+1}. {line['text']}\n   読み: {ph}\n")
+        ph, mx, avg = tts_openjtalk(line.get("say", line["text"]), wav, speed)  # say：読み間違い対策の読み方
+        flag = ""
+        if mx > SLOW_MS:
+            flag = f"  ★要修正：1音が{mx:.0f}ms（平均{avg:.0f}ms）。急に遅くなっている。say で読点を足す"
+            problems.append(f"{i+1}文目が遅くなる（最大{mx:.0f}ms）")
+        readings.append(f"{i+1}. {line['text']}\n   読み: {ph}\n   1音の長さ: 平均{avg:.0f}ms／最大{mx:.0f}ms{flag}\n")
         dur = wav_seconds(wav) + GAP
         pieces = chunks(line["text"])
         voiced = wav_seconds(wav)
         n_chars = sum(len(p) for p in pieces)
-        st = t
+        st, subs = 0.0, []
         for k, piece in enumerate(pieces):
-            png = os.path.join(work, f"f{i:02}_{k}.png")
-            rows = frame(os.path.join(plan["figures_dir"], line["figure"]), piece, png)
+            png = os.path.join(work, f"s{i:02}_{k}.png")
+            rows = subtitle_png(piece, png)
             if rows > 2:
-                print(f"警告: 字幕が{rows}行になりました: {piece}")
+                problems.append(f"字幕が{rows}行: {piece}")
             d = voiced * len(piece) / n_chars + (GAP if k == len(pieces) - 1 else 0)
-            segs.append({"png": png, "start": st, "dur": d, "text": piece,
-                         "wav": wav if k == 0 else None, "last": k == len(pieces) - 1})
+            last = k == len(pieces) - 1
+            segs.append({"start": t + st, "dur": d, "text": piece, "last": last})
+            subs.append((png, st, st + d + (1.0 if last else 0)))   # 最後の字幕は次の文まで出す
             st += d
+        is_last_line = i == len(plan["lines"]) - 1
+        clip_dur = dur + (0.5 if is_last_line else 0)
+        clip = os.path.join(work, f"c{i:02}.mp4")
+        focus = line.get("focus", [W // 2, H // 2 - 200])
+        line_clip(os.path.join(plan["figures_dir"], line["figure"]), subs, clip_dur, focus, i % 2 == 0, clip)
+        clips.append(clip)
+        wavs.append(wav)
         t += dur
     total = t + 0.5
 
@@ -171,22 +224,19 @@ def main(plan_path):
             end = s['start'] + s['dur'] - (GAP if s['last'] else 0)
             f.write(f"{i}\n{srt_time(s['start'])} --> {srt_time(end)}\n{s['text']}\n\n")
 
-    # 映像：画像を時間どおりに並べる
-    lst = os.path.join(work, "frames.txt")
+    # 映像：文ごとのクリップをつなぐ
+    lst = os.path.join(work, "clips.txt")
     with open(lst, "w") as f:
-        for s in segs:
-            f.write(f"file '{os.path.abspath(s['png'])}'\nduration {s['dur']:.3f}\n")
-        f.write(f"file '{os.path.abspath(segs[-1]['png'])}'\nduration 0.5\n")
-        f.write(f"file '{os.path.abspath(segs[-1]['png'])}'\n")
+        for c in clips:
+            f.write(f"file '{os.path.abspath(c)}'\n")
 
     # 声：文ごとの音声の後ろに無音を足してつなぐ
     voice = os.path.join(work, "voice.wav")
     inputs, filt = [], ""
-    voiced_segs = [s for s in segs if s["wav"]]
-    for i, s in enumerate(voiced_segs):
-        inputs += ["-i", s["wav"]]
+    for i, w_ in enumerate(wavs):
+        inputs += ["-i", w_]
         filt += f"[{i}]apad=pad_dur={GAP}[a{i}];"
-    filt += "".join(f"[a{i}]" for i in range(len(voiced_segs))) + f"concat=n={len(voiced_segs)}:v=0:a=1,apad=pad_dur=0.5[out]"
+    filt += "".join(f"[a{i}]" for i in range(len(wavs))) + f"concat=n={len(wavs)}:v=0:a=1,apad=pad_dur=0.5[out]"
     run(["ffmpeg", "-y", *inputs, "-filter_complex", filt, "-map", "[out]", "-ar", str(SR), voice])
 
     # BGM
@@ -197,14 +247,26 @@ def main(plan_path):
     else:
         run(["ffmpeg", "-y", "-i", bgm_cfg["path"], "-t", f"{total:.2f}", "-ar", str(SR), "-ac", "1", bgm])
 
-    out = os.path.join(out_dir, "final.mp4")
+    # 声とBGMを混ぜ、2回測って -14 LUFS に合わせる（1回だけだと約1dB足りなかった：実測）
     g = bgm_cfg.get("gain_db", -26)
-    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-i", voice, "-i", bgm,
-         "-filter_complex",
-         f"[2]volume={g}dB[b];[1][b]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-13:TP=-1.5:LRA=11[a]",
-         "-map", "0:v", "-map", "[a]", "-r", str(FPS), "-c:v", "libx264", "-pix_fmt", "yuv420p",
-         "-crf", "20", "-c:a", "aac", "-b:a", "160k", "-shortest", out])
-    print(f"出力: {out}（{total:.1f}秒）と final.srt")
+    mix = os.path.join(work, "mix.wav")
+    run(["ffmpeg", "-y", "-i", voice, "-i", bgm, "-filter_complex",
+         f"[1]volume={g}dB[b];[0][b]amix=inputs=2:duration=first:normalize=0[a]", "-map", "[a]", mix])
+    # 声のピークが大きく、loudnorm だけでは -15 LUFS 止まりだった（実測）。
+    # 測った値との差だけ音量を上げ、ピークはリミッターで -1.5dB に抑える
+    r = subprocess.run(["ffmpeg", "-i", mix, "-af", "ebur128", "-f", "null", "-"], capture_output=True, text=True)
+    measured = float(r.stderr.split("Integrated loudness:")[-1].split("I:")[1].split("LUFS")[0])
+    gain = -14.0 - measured
+    ln = f"volume={gain:.2f}dB,alimiter=limit=0.84:level=disabled"
+    out = os.path.join(out_dir, "final.mp4")
+    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-i", mix,
+         "-filter_complex", f"[1]{ln},aresample={SR}[a]",
+         "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", out])
+    print(f"出力: {out}（{total:.1f}秒）と final.srt、readings.txt")
+    if problems:
+        print("見つけた問題:\n- " + "\n- ".join(problems))
+        sys.exit(2)
+    print("見つけた問題: なし（読み・遅さ・字幕の行数を確認）")
 
 
 if __name__ == "__main__":
