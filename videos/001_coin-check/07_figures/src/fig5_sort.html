@@ -1,13 +1,13 @@
 <!doctype html><html><head><meta charset="utf-8"><script src="../../../../scripts/figures/kit.js"></script></head><body><script>
 scene({step:"判定", title:"基準外は<em>返却口</em>へ", body:
-  coin(540,520,70,{shadow:false})
-  + arrow(540,610,540,690,"#1E293B",14)
-  + '<g filter="url(#kSh)"><rect x="330" y="700" width="420" height="170" rx="40" fill="#1E293B"/></g><text x="540" y="810" text-anchor="middle" font-size="80" font-weight="900" fill="#fff">判定</text>'
-  + curvePath("M430,870 C410,960 290,990 270,1080","#16A34A",36)
-  + curvePath("M650,870 C670,960 790,990 810,1080","#EF4444",36)
-  + card(90,1090,360,320,{border:"#16A34A"}) + check(270,1190,62)
-  + '<text x="270" y="1330" text-anchor="middle" font-size="60" font-weight="900" fill="#16A34A">受け入れ</text><text x="270" y="1385" text-anchor="middle" font-size="36" fill="#64748B">基準内</text>'
-  + card(630,1090,360,320,{border:"#EF4444"}) + coin(790,1185,58,{shadow:false}) + cross(855,1140,32)
-  + '<text x="810" y="1330" text-anchor="middle" font-size="60" font-weight="900" fill="#EF4444">返却口</text><text x="810" y="1385" text-anchor="middle" font-size="36" fill="#64748B">基準外</text>'
+  coin(540,520,72,{shadow:false, face:"q"})
+  + arrow(540,612,540,688,"#5B3A29",14)
+  + '<g filter="url(#kSh)"><rect x="330" y="700" width="420" height="170" rx="60" fill="#C9B3FF" stroke="#5B3A29" stroke-width="8"/></g><text x="540" y="810" text-anchor="middle" font-size="80" font-weight="900" fill="#fff" stroke="#5B3A29" stroke-width="10" paint-order="stroke">判定</text>'
+  + curvePath("M430,870 C410,960 290,990 270,1080","#3CC08A",34)
+  + curvePath("M650,870 C670,960 790,990 810,1080","#FF6B8B",34)
+  + card(90,1090,360,330,{fill:"#F1FCF6",border:"#5B3A29"}) + coin(270,1180,58,{shadow:false, face:"happy"}) + check(345,1130,30)
+  + '<text x="270" y="1335" text-anchor="middle" font-size="58" font-weight="900" fill="#3CC08A">受け入れ</text><text x="270" y="1390" text-anchor="middle" font-size="34" font-weight="700" fill="#9A7B6A">基準内</text>'
+  + card(630,1090,360,330,{fill:"#FFF1F4",border:"#5B3A29"}) + coin(810,1180,58,{shadow:false, face:"sad"}) + cross(885,1130,30)
+  + '<text x="810" y="1335" text-anchor="middle" font-size="58" font-weight="900" fill="#FF6B8B">返却口</text><text x="810" y="1390" text-anchor="middle" font-size="34" font-weight="700" fill="#9A7B6A">基準外</text>'
 });
 </script></body></html>

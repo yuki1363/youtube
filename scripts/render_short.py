@@ -33,14 +33,16 @@ def run(cmd):
 
 
 # ---------- ナレーション ----------
-def tts_openjtalk(text, path, speed):
+def tts_openjtalk(text, path, speed, fm=0.0, alpha=None, jf=None):
+    """fm：声の高さ（半音）、alpha：声質（小さいほど軽い声）、jf：抑揚の強さ。可愛い声は plan.json の voice で指定"""
     voice = "/usr/share/hts-voice/nitech-jp-atr503-m001/nitech_jp_atr503_m001.htsvoice"
     dic = "/var/lib/mecab/dic/open-jtalk/naist-jdic"
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
         f.write(text)
     raw = path + ".raw.wav"
     trace = path + ".trace.txt"
-    run(["open_jtalk", "-x", dic, "-m", voice, "-r", str(speed), "-ow", raw, "-ot", trace, f.name])
+    extra = ["-fm", str(fm)] + (["-a", str(alpha)] if alpha else []) + (["-jf", str(jf)] if jf else [])
+    run(["open_jtalk", "-x", dic, "-m", voice, "-r", str(speed), *extra, "-ow", raw, "-ot", trace, f.name])
     run(["ffmpeg", "-y", "-i", raw, "-ar", str(SR), "-ac", "1", path])
     os.remove(raw); os.remove(f.name)
     return reading(trace)
@@ -178,12 +180,14 @@ def main(plan_path):
     plan = json.load(open(plan_path, encoding="utf-8"))
     out_dir = plan["out_dir"]; os.makedirs(out_dir, exist_ok=True)
     work = os.path.join(out_dir, "work"); os.makedirs(work, exist_ok=True)
-    speed = plan.get("voice", {}).get("speed", 1.0)
+    vc = plan.get("voice", {})
+    speed = vc.get("speed", 1.0)
+    vopt = {"fm": vc.get("fm", 0.0), "alpha": vc.get("alpha"), "jf": vc.get("jf")}
 
     segs, t, readings, problems, clips, wavs = [], 0.0, [], [], [], []
     for i, line in enumerate(plan["lines"]):
         wav = os.path.join(work, f"v{i:02}.wav")
-        ph, mx, avg = tts_openjtalk(line.get("say", line["text"]), wav, speed)  # say：読み間違い対策の読み方
+        ph, mx, avg = tts_openjtalk(line.get("say", line["text"]), wav, speed, **vopt)  # say：読み間違い対策の読み方
         flag = ""
         if mx > SLOW_MS:
             flag = f"  ★要修正：1音が{mx:.0f}ms（平均{avg:.0f}ms）。急に遅くなっている。say で読点を足す"
