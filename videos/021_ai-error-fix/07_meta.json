@@ -1,0 +1,20 @@
+{
+  "video": "021",
+  "title": "",
+  "title_ab_variants": [],
+  "description_first_lines": "",
+  "description": "",
+  "chapters": [
+    {"time": "0:00", "label": ""}
+  ],
+  "tags": [],
+  "playlist": "",
+  "end_screen_next_video": "",
+  "cta_offer": "",
+  "paid_promotion": false,
+  "ai_disclosure_needed": false,
+  "ai_disclosure_reason": "",
+  "shorts": [
+    {"file": "09_shorts/short1.mp4", "title": "", "related_video": true}
+  ]
+}
