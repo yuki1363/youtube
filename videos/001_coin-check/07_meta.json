@@ -1,20 +1,31 @@
 {
   "video": "001",
-  "title": "",
-  "title_ab_variants": [],
-  "description_first_lines": "",
-  "description": "",
-  "chapters": [
-    {"time": "0:00", "label": ""}
+  "title": "自販機は偽物の硬貨をどうやって見破っている？",
+  "title_ab_variants": [
+    "自販機の中で硬貨は何を測られている？",
+    "外国のコインが自販機で戻ってくる理由"
   ],
-  "tags": [],
+  "description_first_lines": "自販機に入れた硬貨は、転がっている一瞬で検査されています。",
+  "description": "自販機に入れた硬貨は、転がっている一瞬で検査されています。\n大きさ・厚み、そしてコイルの磁界で材質を見る仕組みを図解しました。\n\n【出典】\n・特開昭61-262990「硬貨選別装置」 https://patents.google.com/patent/JPS61262990A/ja\n・GB2297641B Coin discriminating device in automatic vending machine https://patents.google.com/patent/GB2297641B/\n※方式は機種によって異なります。\n\n【クレジット】\n音声合成：Open JTalk（HTS voice nitech_jp_atr503_m001, CC BY 3.0）\nBGM：自作\n\n#Shorts #自販機 #仕組み #雑学",
+  "chapters": [],
+  "tags": [
+    "自販機",
+    "硬貨",
+    "仕組み",
+    "雑学",
+    "電磁誘導"
+  ],
   "playlist": "",
   "end_screen_next_video": "",
   "cta_offer": "",
   "paid_promotion": false,
   "ai_disclosure_needed": false,
-  "ai_disclosure_reason": "",
+  "ai_disclosure_reason": "合成音声のナレーションのみ。実在の人物・出来事を写実的に作った映像ではないため不要と判断（YouTubeの基準は公開前に再確認）",
   "shorts": [
-    {"file": "09_shorts/short1.mp4", "title": "", "related_video": true}
+    {
+      "file": "05_edit/final.mp4",
+      "title": "自販機は偽物の硬貨をどうやって見破っている？",
+      "related_video": false
+    }
   ]
 }

@@ -1,0 +1,47 @@
+{
+  "figures_dir": "videos/001_coin-check/07_figures",
+  "out_dir": "videos/001_coin-check/05_edit",
+  "voice": {
+    "engine": "openjtalk",
+    "speed": 1.1
+  },
+  "bgm": {
+    "type": "synth",
+    "gain_db": -26
+  },
+  "lines": [
+    {
+      "text": "自販機に入れた硬貨、実は転がっている一瞬で、本物かどうか検査されています。",
+      "figure": "fig1_question.png"
+    },
+    {
+      "text": "硬貨は坂道を転がりながら、いくつかの検査を受けます。",
+      "figure": "fig2_size.png"
+    },
+    {
+      "text": "まず大きさと厚み。",
+      "figure": "fig2_size.png"
+    },
+    {
+      "text": "次に、電子式の選別装置では、コイルで磁界を作って、硬貨を通したときの変化を見ます。",
+      "figure": "fig3_coil.png"
+    },
+    {
+      "text": "金属の種類によって変化の仕方が違うので、材質が分かるんです。",
+      "figure": "fig3_coil.png"
+    },
+    {
+      "text": "基準から外れた硬貨は、返却口へ振り分けられます。",
+      "figure": "fig4_sort.png",
+      "say": "基準から外れた硬貨は、返却ぐちへ振り分けられます。"
+    },
+    {
+      "text": "外国のコインや、大きさの近い別の硬貨が戻ってくるのはこのためです。",
+      "figure": "fig1_question.png"
+    },
+    {
+      "text": "ほかの身近な仕組みも、図解で出しています。",
+      "figure": "fig4_sort.png"
+    }
+  ]
+}

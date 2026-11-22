@@ -1,5 +1,5 @@
 ---
-status: draft        # ユーザーが確認後 approved に変更
+status: approved     # 2026-11-22 ユーザー承認
 video: "001"
 format: Shorts（約45秒・縦型）
 hook_type: ①結果先出し
