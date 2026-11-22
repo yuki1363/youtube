@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><script src="../../../../scripts/figures/kit.js"></script></head><body><script>
+scene({step:"検査 1", title:"まず<em>大きさ</em>", body:
+  rail(60,660,1020,1020,44)
+  + sensor(395,470,150,74,"センサー") + beam(470,544,470,566)
+  + coin(470,688,120,{motion:true, shadow:false})
+  + '<g stroke="#1E293B" stroke-width="7" stroke-linecap="round"><line x1="300" y1="568" x2="300" y2="808"/><line x1="276" y1="568" x2="324" y2="568"/><line x1="276" y1="808" x2="324" y2="808"/></g>'
+  + pill(190,690,"直径","#1E293B",44)
+  + card(150,1110,780,320)
+  + label(330,1200,"横から見ると","#64748B",40)
+  + coinSide(700,1270,56,240)
+  + arrow(580,1270,664,1270,"#EF4444",12) + arrow(820,1270,736,1270,"#EF4444",12)
+  + label(380,1310,"厚み","#EF4444",86)
+});
+</script></body></html>

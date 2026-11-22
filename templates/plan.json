@@ -1,0 +1,9 @@
+{
+  "figures_dir": "videos/{番号}/07_figures",
+  "out_dir": "videos/{番号}/05_edit",
+  "voice": {"engine": "openjtalk", "speed": 1.1},
+  "bgm": {"type": "synth", "gain_db": -26},
+  "lines": [
+    {"text": "字幕に出す文", "say": "読み上げ用の文（読み間違い対策。省略可）", "figure": "fig1_question.png", "focus": [540, 900]}
+  ]
+}

@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><script src="../../../../scripts/figures/kit.js"></script></head><body><script>
+scene({step:"検査 2", title:"磁界で<em>材質</em>を見る", body:
+  fieldLines(560,830)
+  + rail(40,800,1040,800,50)
+  + coil(560,825,8,280,230)
+  + coin(200,770,85,{motion:true, shadow:false})
+  + pill(860,560,"コイル","#9A3412",42)
+  + label(900,1150,"磁界","#2563EB",48)
+  + card(330,1190,660,200)
+  + '<text x="660" y="1280" text-anchor="middle" font-size="52" font-weight="900" fill="#1E293B">硬貨が通ると</text><text x="660" y="1350" text-anchor="middle" font-size="52" font-weight="900" fill="#EF4444">磁界が変化</text>'
+  + mascot(170,1290,0.72,"point")
+});
+</script></body></html>

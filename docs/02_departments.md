@@ -75,5 +75,7 @@
 | ④ 内容精度 | 全文に出典、または言い換え・削除の判定 | 出典照合 | 最終承認 |
 
 ### 図解の作り方（2026-11-22 変更）
-- HTML/SVG で描き、Chromium で PNG にする（`scripts/figures/v001/` が見本。共通の色・文字は `scripts/figures/style.css`）
-- Pillow の線画（`scripts/figures/common.py`）は品質不足のため使わない
+- `scripts/figures/kit.js` の部品（硬貨・自販機・コイル・センサー・カード・矢印・グラフ・ナビゲーター「ビリ太」など）で組み立てる
+- 各動画の図は `videos/NNN/07_figures/src/*.html`。見本は 001
+- 影・グラデーション・白いふちどり文字で立体感を出す。部品を増やすときも同じ作りにそろえる
+- `common.py` は字幕用のフォント・色だけに使う（Pillow の線画は品質不足のため使わない）
