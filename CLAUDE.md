@@ -34,7 +34,8 @@
 |---|---|
 | /new-video | 新しい動画フォルダ作成と調査 |
 | /script | 台本作成（承認待ちで止まる） |
-| /edit | 無音カット＋字幕生成 |
+| /voice | 声の整音・VOICEVOX補助音声の調整と生成 |
+| /edit | 整音＋無音カット＋字幕生成 |
 | /thumbnail | サムネイル3案 |
 | /shorts | 縦型Shorts 3本 |
 | /publish-prep | メタデータ作成と公開前チェック |

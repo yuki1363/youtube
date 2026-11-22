@@ -1,0 +1,36 @@
+{
+  "_note": "値はすべて初期値（推測）。実際の収録で聞き比べて調整し、決めた値をここに残す",
+  "own_voice": {
+    "highpass_hz": 80,
+    "denoise_nf_db": -25,
+    "deesser": 0.5,
+    "compressor": {"threshold_db": -20, "ratio": 3, "attack_ms": 5, "release_ms": 120},
+    "target_lufs": -14,
+    "true_peak_db": -1.5,
+    "lra": 11
+  },
+  "voicevox": {
+    "engine_url": "http://127.0.0.1:50021",
+    "speaker": 3,
+    "speed": 1.1,
+    "pitch": 0.0,
+    "intonation": 1.0,
+    "volume": 1.0,
+    "pre_silence_sec": 0.1,
+    "post_silence_sec": 0.15,
+    "credit": "VOICEVOX:ずんだもん",
+    "max_share": 0.3,
+    "readings": {
+      "GX Works2": "ジーエックスワークスツー",
+      "GX Works3": "ジーエックスワークススリー",
+      "GOT": "ゴット",
+      "PLC": "ピーエルシー",
+      "FX": "エフエックス",
+      "ERR": "エラー",
+      "Node-RED": "ノードレッド",
+      "Raspberry Pi": "ラズベリーパイ",
+      "Claude": "クロード",
+      "AI": "エーアイ"
+    }
+  }
+}

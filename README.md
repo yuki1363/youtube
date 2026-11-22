@@ -11,7 +11,8 @@
 /new-video 24        → 調査メモ（あなたが採用判定）
 /script              → 台本（あなたが approved にする）  ← 関門1
   収録（OBS・スマホ）→ 04_raw/ に置く
-/edit                → 無音カット＋字幕
+/voice               → 声の整音の調整／VOICEVOX補助音声（初回は聞き比べ）
+/edit                → 整音＋無音カット＋字幕
   DaVinci Resolveで仕上げ
 /thumbnail           → 3案
 /shorts              → 縦型3本

@@ -4,9 +4,9 @@
 |---|---|---|---|
 | 1 調査 | AI → 人が選ぶ | Claude（Web検索） | 10分 |
 | 2 台本 | AI → 人が承認 | /script | 20分 |
-| 3 ナレーション | 人（冒頭と要所） | 自分の声。補助にVOICEVOX（規約・クレジット要確認） | 15分 |
+| 3 ナレーション | 人（冒頭と要所） | 自分の声（scripts/voice_clean.py で整音）。補助にVOICEVOX（scripts/voicevox_tts.py、規約・クレジット要確認）→ /voice | 15分 |
 | 4 撮影 | 人 | OBS Studio、スマホ | 30分 |
-| 5 編集 | AI → 人が仕上げ | auto-editor、faster-whisper、DaVinci Resolve | 20分 |
+| 5 編集 | AI → 人が仕上げ | 整音（ffmpeg）、auto-editor、faster-whisper、DaVinci Resolve | 20分 |
 | 6 サムネ | AI → 人が選ぶ | scripts/thumbnail.py | 5分 |
 | 7 投稿 | 人 | YouTube Studio（API自動化は第3段階） | 5分 |
 | 8 分析 | AI | Studioから出したCSV → /weekly-review | 10分 |

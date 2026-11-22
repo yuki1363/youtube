@@ -14,6 +14,7 @@
   "paid_promotion": false,
   "ai_disclosure_needed": false,
   "ai_disclosure_reason": "",
+  "voicevox_credit": "",
   "shorts": [
     {"file": "09_shorts/short1.mp4", "title": "", "related_video": true}
   ]

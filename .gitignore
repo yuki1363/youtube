@@ -19,3 +19,6 @@ desktop.ini
 
 # 秘密情報
 .env
+
+# 声の聞き比べ用（voicevox_tts.py --try の出力）
+scratch_voice/
