@@ -1,0 +1,205 @@
+<title>ビリ太スタジオ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+/* レイアウト：スマホ1列。上に状況のまとめ、下に動画カードを「確認待ち」から順に縦に並べる */
+:root{
+  --bg:#FFF6F0; --surface:#FFFFFF; --ink:#4A3428; --muted:#8C6F60; --line:#F0D9CF;
+  --pink:#FF6B8B; --pink-soft:#FFE3EA; --mint:#2FA97A; --mint-soft:#DDF5EA;
+  --sun:#F2A93B; --sun-soft:#FFF1D2; --sky:#3F7FE0; --sky-soft:#E1ECFF;
+  --f-head:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Noto Sans JP",sans-serif;
+  --f-body:"Zen Maru Gothic","Hiragino Sans","Noto Sans JP",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#2A211D; --surface:#362B26; --ink:#FBEDE6; --muted:#CBB2A5; --line:#4C3D36;
+  --pink:#FF8AA3; --pink-soft:#4A2E36; --mint:#5FD3A3; --mint-soft:#24423A;
+  --sun:#FFC56B; --sun-soft:#4A3B22; --sky:#8AB4FF; --sky-soft:#25324A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#2A211D; --surface:#362B26; --ink:#FBEDE6; --muted:#CBB2A5; --line:#4C3D36;
+  --pink:#FF8AA3; --pink-soft:#4A2E36; --mint:#5FD3A3; --mint-soft:#24423A;
+  --sun:#FFC56B; --sun-soft:#4A3B22; --sky:#8AB4FF; --sky-soft:#25324A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-head);font-weight:800;margin:0;text-wrap:balance}
+h1{font-size:28px;letter-spacing:.02em}
+h2{font-size:19px}
+.sub{color:var(--muted);font-size:13px;margin:4px 0 0}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tile{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:10px 6px;text-align:center}
+.tile b{display:block;font-family:var(--f-head);font-size:24px;font-variant-numeric:tabular-nums}
+.tile span{font-size:12px;color:var(--muted)}
+.panel{background:var(--surface);border:2px solid var(--line);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 12px;font-size:12px;font-weight:700;font-family:var(--f-head)}
+.st-review{background:var(--sun-soft);color:var(--sun)} .st-approved{background:var(--sky-soft);color:var(--sky)}
+.st-redo{background:var(--pink-soft);color:var(--pink)} .st-posted{background:var(--mint-soft);color:var(--mint)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+video{width:100%;max-width:100%;aspect-ratio:9/16;max-height:70vh;background:#000;border-radius:18px;display:block}
+.copybox{border:2px dashed var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.copybox .k{font-size:12px;color:var(--muted);font-weight:700}
+.copybox .v{white-space:pre-wrap;word-break:break-word;font-size:14px;max-height:9em;overflow:auto}
+button{font-family:var(--f-head);font-weight:800;font-size:15px;border-radius:16px;border:2px solid transparent;padding:12px 16px;cursor:pointer;min-height:48px}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+button:disabled{opacity:.5;cursor:default}
+.b-main{background:var(--pink);color:#fff;flex:1}
+.b-ok{background:var(--sky);color:#fff;flex:1}
+.b-sub{background:transparent;border-color:var(--line);color:var(--ink)}
+.b-small{min-height:36px;padding:6px 12px;font-size:13px}
+.checks{margin:0;padding-left:1.2em;font-size:14px}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.fact{background:var(--bg);border-radius:12px;padding:4px 10px;font-size:13px;font-variant-numeric:tabular-nums}
+textarea{width:100%;min-height:72px;border:2px solid var(--line);border-radius:14px;padding:10px;font:inherit;background:var(--bg);color:var(--ink)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);
+  padding:10px 18px;border-radius:999px;font-family:var(--f-head);font-weight:800;font-size:14px;z-index:20}
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.voice{border:2px solid var(--line);border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.voice.sel{border-color:var(--pink);background:var(--pink-soft)}
+.voice video{aspect-ratio:16/9;max-height:none;border-radius:12px}
+.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.empty{color:var(--muted);text-align:center;padding:24px 8px}
+details summary{cursor:pointer;font-family:var(--f-head);font-weight:800}
+@media (prefers-reduced-motion:no-preference){.panel{transition:border-color .2s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>ビリ太スタジオ</h1>
+    <p class="sub">自動で作った動画を見て、承認して、スマホから投稿します。</p>
+  </header>
+
+  <section class="summary" aria-label="状況">
+    <div class="tile"><b id="n-review">–</b><span>確認待ち</span></div>
+    <div class="tile"><b id="n-approved">–</b><span>投稿待ち</span></div>
+    <div class="tile"><b id="n-redo">–</b><span>作り直し</span></div>
+    <div class="tile"><b id="n-posted">–</b><span>投稿済み</span></div>
+  </section>
+
+  <section class="panel" id="voice-panel" hidden>
+    <h2>ナレーションの声</h2>
+    <p class="sub" id="voice-note">聞き比べて選んでください。次の自動制作から使います。</p>
+    <div class="voices" id="voices"></div>
+  </section>
+
+  <section id="list" style="display:flex;flex-direction:column;gap:20px">
+    <div class="panel empty" id="loading">動画を読み込んでいます…</div>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>スマホから投稿する手順</summary>
+      <ol class="steps">
+        <li>動画を見て、声・絵・内容に問題がなければ「承認」。</li>
+        <li>「タイトルをコピー」「説明欄をコピー」を押して控えておく。</li>
+        <li>「動画を保存・共有」を押し、共有先で YouTube アプリを選ぶ（iPhoneは共有シート、Androidは保存してからYouTubeアプリで選ぶ）。</li>
+        <li>YouTube アプリでタイトルと説明欄を貼り付けて公開。</li>
+        <li>ここに戻って「投稿済みにする」を押す。次の自動制作の参考になります。</li>
+      </ol>
+    </details>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const STATUS = {review:["確認待ち","st-review"], approved:["投稿待ち","st-approved"], redo:["作り直し","st-redo"], posted:["投稿済み","st-posted"]};
+const ORDER = {review:0, approved:1, redo:2, posted:3};
+let db = null, downloads = null, videos = [], settings = {};
+const $ = (id) => document.getElementById(id);
+
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>t.hidden=true,2200); }
+
+async function copy(text, label, box){
+  try{ await navigator.clipboard.writeText(text); toast(label+"をコピーしました"); }
+  catch(e){ const r=document.createRange(); r.selectNodeContents(box); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("選択しました。長押しでコピーしてください"); }
+}
+
+function el(tag, attrs={}, ...kids){
+  const e=document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs)){ if(k==="class") e.className=v; else if(k.startsWith("on")) e.addEventListener(k.slice(2),v); else if(v!==undefined&&v!==null) e.setAttribute(k,v); }
+  for(const k of kids.flat()){ if(k==null) continue; e.append(k.nodeType?k:document.createTextNode(String(k))); }
+  return e;
+}
+
+async function setStatus(v, status, extra={}){
+  if(!db) return;
+  try{ await db.doc("videos/"+v.id).update({status, updatedAt:new Date().toISOString(), ...extra}); toast(STATUS[status][0]+"にしました"); }
+  catch(e){ toast("保存できませんでした。もう一度押してください"); }
+}
+
+async function saveVideo(v, btn){
+  if(!downloads){ toast("このアプリでは保存できません。ブラウザで開いてください"); return; }
+  btn.disabled=true; btn.textContent="準備中…";
+  try{
+    const blob = await (await fetch(v.videoUrl)).blob();
+    await downloads.save({filename:`${v.id}_${v.slug||"short"}.mp4`, data:blob});
+    toast("保存しました");
+  }catch(e){ if(e&&e.code!=="declined") toast("保存できませんでした"); }
+  btn.disabled=false; btn.textContent="動画を保存・共有";
+}
+
+function card(v){
+  const st = STATUS[v.status]||STATUS.review;
+  const titleBox = el("div",{class:"v"}, v.title||"");
+  const descBox = el("div",{class:"v"}, v.description||"");
+  const note = el("textarea",{id:"note-"+v.id, placeholder:"作り直すときの指示（例：声が速い、3枚目の絵を明るく）"}, );
+  note.value = v.note||"";
+  const facts = el("div",{class:"facts"},
+    v.duration?el("span",{class:"fact"},`${v.duration}秒`):null,
+    v.lufs?el("span",{class:"fact"},`音量 ${v.lufs} LUFS`):null,
+    el("span",{class:"fact"}, v.autoCheck||"自動チェック：未実行"),
+    v.createdAt?el("span",{class:"fact"},`作成 ${v.createdAt.slice(0,10)}`):null);
+  const actions = el("div",{class:"row"});
+  if(v.status!=="posted"){
+    if(v.status!=="approved") actions.append(el("button",{class:"b-ok",onclick:()=>setStatus(v,"approved",{note:note.value})},"承認"));
+    actions.append(el("button",{class:"b-sub",onclick:()=>{ if(!note.value.trim()){ note.focus(); toast("作り直す理由を書いてください"); return;} setStatus(v,"redo",{note:note.value}); }},"作り直し"));
+  }
+  const post = el("div",{class:"row"});
+  if(v.videoUrl){ const b=el("button",{class:"b-main"},"動画を保存・共有"); b.addEventListener("click",()=>saveVideo(v,b)); post.append(b); }
+  if(v.status==="approved") post.append(el("button",{class:"b-sub",onclick:()=>setStatus(v,"posted",{postedAt:new Date().toISOString()})},"投稿済みにする"));
+  return el("article",{class:"panel"},
+    el("div",{class:"row"}, el("span",{class:"chip "+st[1]}, st[0]), el("span",{class:"sub",style:"margin:0"}, `#${v.id}`)),
+    el("h2",{}, v.title||"（タイトル未定）"),
+    v.videoUrl? el("video",{src:v.videoUrl, controls:"", playsinline:"", preload:"metadata", poster:v.posterUrl||undefined}) : el("p",{class:"empty"},"動画ファイルはまだありません"),
+    facts,
+    v.summary? el("p",{style:"margin:0"}, v.summary) : null,
+    v.humanChecks&&v.humanChecks.length? el("details",{}, el("summary",{},"あなたが確認すること"), el("ul",{class:"checks"}, v.humanChecks.map(c=>el("li",{},c)))) : null,
+    el("div",{class:"copybox"}, el("span",{class:"k"},"タイトル"), titleBox, el("button",{class:"b-sub b-small",onclick:()=>copy(v.title||"","タイトル",titleBox)},"タイトルをコピー")),
+    v.titleAlts&&v.titleAlts.length? el("p",{class:"sub",style:"margin:0"},"別案："+v.titleAlts.join("／")) : null,
+    el("div",{class:"copybox"}, el("span",{class:"k"},"説明欄（出典・クレジット入り）"), descBox, el("button",{class:"b-sub b-small",onclick:()=>copy(v.description||"","説明欄",descBox)},"説明欄をコピー")),
+    note, actions, post);
+}
+
+function render(){
+  const counts={review:0,approved:0,redo:0,posted:0};
+  videos.forEach(v=>counts[v.status in counts?v.status:"review"]++);
+  for(const k in counts) $("n-"+k).textContent=counts[k];
+  const list=$("list"); list.replaceChildren();
+  if(!videos.length){ list.append(el("div",{class:"panel empty"},"まだ動画がありません。自動制作が終わると、ここに並びます。")); return; }
+  [...videos].sort((a,b)=>(ORDER[a.status]??0)-(ORDER[b.status]??0)||String(b.id).localeCompare(String(a.id))).forEach(v=>list.append(card(v)));
+}
+
+function renderVoices(){
+  const opts = settings.voiceOptions||[];
+  $("voice-panel").hidden = !opts.length;
+  const box=$("voices"); box.replaceChildren();
+  opts.forEach(o=>{
+    const sel = settings.voice===o.key;
+    box.append(el("div",{class:"voice"+(sel?" sel":"")},
+      el("b",{style:"font-family:var(--f-head)"}, o.label + (sel?"（使用中）":"")),
+      o.url? el("video",{src:o.url,controls:"",playsinline:"",preload:"metadata"}) : null,
+      el("button",{class:sel?"b-ok b-small":"b-sub b-small",disabled:sel?"":undefined,onclick:async()=>{
+        try{ await db.doc("settings/main").update({voice:o.key, voiceChosenAt:new Date().toISOString()}); toast("「"+o.label+"」にしました"); }catch(e){ toast("保存できませんでした"); }
+      }}, sel?"選択中":"この声にする")));
+  });
+}
+
+(async()=>{
+  const t=setTimeout(()=>{ const l=$("loading"); if(l) l.textContent="まだ読み込めません。通信状況を確認してください。"; },10000);
+  db = await window.claude?.use?.("db");
+  downloads = await window.claude?.use?.("downloads");
+  if(!db){ clearTimeout(t); $("list").replaceChildren(el("div",{class:"panel empty"},"このページはサインインして開くと動画が表示されます。")); return; }
+  db.collection("videos").onSnapshot(s=>{ clearTimeout(t); videos=s.docs.map(d=>({id:d.id,...d.data()})); render(); },
+    ()=>{ clearTimeout(t); $("list").replaceChildren(el("div",{class:"panel empty"},"動画を読み込めませんでした。開き直してください。")); });
+  db.doc("settings/main").onSnapshot(s=>{ settings=s.exists?s.data():{}; renderVoices(); }, ()=>{});
+})();
+</script>

@@ -8,7 +8,12 @@ description: ネタ選びから完成動画・部門報告までを自動で作�
 本数の指定があれば、その本数を順番に作る。1本ずつ全工程を終えてから次へ進む。
 
 ## 0. 準備
-- 読む：CLAUDE.md、docs/01_strategy.md、docs/02_departments.md、docs/03_format.md、docs/video-ideas.md、plan/ideas-inbox.md、analytics/log.csv
+- `scripts/setup_cloud.sh`（道具が入っていなければ入れる）
+- 読む：CLAUDE.md、docs/01_strategy.md、docs/02_departments.md、docs/03_format.md、docs/video-ideas.md、plan/ideas-inbox.md、analytics/log.csv、studio/README.md
+- **スマホのレビューページ（studio/README.md のURL）を確認する**：Artifact の read で一度読み、ArtifactData で
+  - `settings/main` の `voice` と `voiceOptions` → 選ばれた声の `openjtalk` 設定を plan.json の voice に使う
+  - `videos` の `status: "redo"` → **新作より先に**その動画を `note` の指示どおりに直す（直したら status を review に戻し、note は残す）
+  - `status: "posted"` → analytics/log.csv に行がなければ追加（公開日＝postedAt、数値は空欄）
 - 次の番号 = videos/ の最大番号＋1
 
 ## 1. ① SNS収集部門 → ⑪ 統括がネタを決める
@@ -51,9 +56,15 @@ description: ネタ選びから完成動画・部門報告までを自動で作�
 - videos/001_coin-check/report.md と同じ形で、部門ごとに「確認したこと／見つけた問題→対応／判定」
 - 最後に「人に見てほしい所」を3つ以内で書く
 
-## 9. 止まる（完成品レビュー）
-- final.mp4 と report.md を SendUserFile で送り、ユーザーに次を頼む
-  1. 動画を見て聞いて、台本・声・図を承認（よければ 02_script.md を approved に）
-  2. 人の項目のチェック
-- 公開はユーザーが YouTube Studio で行う。AIは公開しない
-- 変更はブランチにコミットしてpushする
+## 9. スマホのレビューページに載せる
+- poster：`ffmpeg -i 07_figures/fig1*.png -vf scale=540:-1 06_thumb/poster.jpg`
+- Artifact（publish, url=レビューページ, asset:true, file_paths=[final.mp4, poster.jpg]）で上げ、返った url を使う
+- ArtifactData で `videos/<番号>` を set（形は studio/README.md）。status は "review"
+- 作り直した動画は update（新しい videoUrl・duration・lufs・autoCheck・updatedAt、status:"review"）。古い動画アセットは消してよい
+
+## 10. 止まる（完成品レビュー）
+- ユーザーはスマホのレビューページで、見て聞いて「承認」か「作り直し（指示つき）」を押す
+- 承認された台本は次の実行で 02_script.md を approved にする
+- 公開はユーザーが YouTube アプリで行う。AIは公開しない
+- 変更はブランチ claude/festive-gauss-cbxiq3 にコミットしてpushする
+- 最後に、作った本数・タイトル・人に見てほしい所を短くまとめる（定期実行ではこれが通知になる）
